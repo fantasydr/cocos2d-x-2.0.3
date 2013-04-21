@@ -71,7 +71,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;XP_WIN;JS_HAVE___INTN;JS_INTPTR_TYPE=int;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -114,7 +114,7 @@ xcopy /Y /Q "$(SolutionDir)scripting\javascript\spidermonkey-win32\lib\*.*" "$(O
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;XP_WIN;JS_HAVE___INTN;JS_INTPTR_TYPE=int;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
