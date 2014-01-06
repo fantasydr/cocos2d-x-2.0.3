@@ -30,6 +30,10 @@ THE SOFTWARE.
 #include "cocoa/CCGeometry.h"
 #include "platform/CCEGLViewProtocol.h"
 
+#ifdef CC_USING_ANGLE_EGL
+#include <EGL/egl.h>
+#endif
+
 NS_CC_BEGIN
 
 typedef LRESULT (*CUSTOM_WND_PROC)(UINT message, WPARAM wParam, LPARAM lParam, BOOL* pProcessed);
@@ -81,7 +85,14 @@ private:
     bool m_bCaptured;
     HWND m_hWnd;
     HDC  m_hDC;
+#ifdef CC_USING_ANGLE_EGL
+    EGLDisplay _egl_display;
+    EGLContext _egl_context;
+    EGLSurface _egl_surface;
+    EGLConfig _egl_config;
+#else
     HGLRC m_hRC;
+#endif
     LPFN_ACCELEROMETER_KEYHOOK m_lpfnAccelerometerKeyHook;
 
     LPCWSTR m_menu;

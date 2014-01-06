@@ -25,8 +25,16 @@ THE SOFTWARE.
 #ifndef __CCGL_H__
 #define __CCGL_H__
 
-#include "GL/glew.h"
+#define CC_USING_ANGLE_EGL
 
+#ifdef CC_USING_ANGLE_EGL
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#define CC_GL_DEPTH24_STENCIL8		GL_DEPTH24_STENCIL8_OES
+#define glClearDepth                glClearDepthf
+#else // CC_USING_ANGLE_EGL
+#include "GL/glew.h"
 #define CC_GL_DEPTH24_STENCIL8		GL_DEPTH24_STENCIL8
+#endif // CC_USING_ANGLE_EGL
 
 #endif // __CCGL_H__

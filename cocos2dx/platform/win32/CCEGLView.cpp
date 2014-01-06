@@ -87,7 +87,14 @@ CCEGLView::CCEGLView()
 : m_bCaptured(false)
 , m_hWnd(NULL)
 , m_hDC(NULL)
+#ifdef CC_USING_ANGLE_EGL
+,_egl_display(0)
+,_egl_context(0)
+,_egl_surface(0)
+,_egl_config(0)
+#else
 , m_hRC(NULL)
+#endif
 , m_lpfnAccelerometerKeyHook(NULL)
 , m_menu(NULL)
 , m_wndproc(NULL)
@@ -103,6 +110,113 @@ CCEGLView::~CCEGLView()
 {
 
 }
+
+#ifdef CC_USING_ANGLE_EGL
+
+#pragma comment(lib, "libEGL.lib")
+#pragma comment(lib, "libGLESv2.lib")
+
+bool CCEGLView::initGL()
+{
+    _egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if(!_egl_display)
+        return false;
+
+    if(eglInitialize(_egl_display, 0, 0) != EGL_TRUE)
+        return false;
+
+    //////////////////////////////////////////////////////////////////////////
+    // setup window
+    HWND hwnd = m_hWnd;
+
+    /* 64 seems nice. */
+    EGLint attribs[64];
+    int i = 0;
+    attribs[i++] = EGL_RED_SIZE;
+    attribs[i++] = 8;
+    attribs[i++] = EGL_GREEN_SIZE;
+    attribs[i++] = 8;
+    attribs[i++] = EGL_BLUE_SIZE;
+    attribs[i++] = 8;
+
+    attribs[i++] = EGL_ALPHA_SIZE;
+    attribs[i++] = 8;
+
+    //attribs[i++] = EGL_BUFFER_SIZE;
+    //attribs[i++] = <value>;
+
+    //attribs[i++] = EGL_DEPTH_SIZE;
+    //attribs[i++] = <value>;
+
+    //attribs[i++] = EGL_STENCIL_SIZE;
+    //attribs[i++] = <value>;
+
+    //attribs[i++] = EGL_SAMPLE_BUFFERS;
+    //attribs[i++] = <value>;
+
+    //attribs[i++] = EGL_SAMPLES;
+    //attribs[i++] = <value>;
+
+    attribs[i++] = EGL_RENDERABLE_TYPE;
+    attribs[i++] = EGL_OPENGL_ES2_BIT;
+    
+    attribs[i++] = EGL_NONE;
+
+    EGLint found_configs = 0;
+    if (eglChooseConfig(_egl_display, attribs, &_egl_config, 1, &found_configs) == EGL_FALSE || found_configs == 0)
+        return false;
+
+    /* Create the GLES window surface */
+    _egl_surface = eglCreateWindowSurface(_egl_display, _egl_config, (NativeWindowType) hwnd, NULL);
+
+    if (_egl_surface == EGL_NO_SURFACE)
+        return false;
+
+    //////////////////////////////////////////////////////////////////////////
+    // create context
+    EGLint context_attrib_list[] = {
+        EGL_CONTEXT_CLIENT_VERSION,
+        2, // use ES2 directly
+        EGL_NONE
+    };
+
+    _egl_context = eglCreateContext(_egl_display, _egl_config, EGL_NO_CONTEXT, context_attrib_list);
+
+    if (_egl_context == EGL_NO_CONTEXT)
+        return false;
+
+    if (!eglMakeCurrent(_egl_display, _egl_surface, _egl_surface, _egl_context))
+        return false;
+
+    return true;
+}
+
+void CCEGLView::destroyGL()
+{
+    if (isOpenGLReady())
+    {
+        if (_egl_context != EGL_NO_CONTEXT || _egl_surface != EGL_NO_SURFACE)
+        {
+            eglMakeCurrent(_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+
+            if (_egl_context != EGL_NO_CONTEXT)
+            {
+                eglDestroyContext(_egl_display, _egl_context);
+                _egl_context = EGL_NO_CONTEXT;
+            }
+
+            if (_egl_surface != EGL_NO_SURFACE)
+            {
+                eglDestroySurface(_egl_display, _egl_surface);
+                _egl_surface = EGL_NO_SURFACE;
+            }
+        }
+    }
+}
+#else
+
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glew32.lib")
 
 bool CCEGLView::initGL()
 {
@@ -161,6 +275,7 @@ void CCEGLView::destroyGL()
         wglDeleteContext(m_hRC);
     }
 }
+#endif
 
 bool CCEGLView::Create(LPCTSTR pTitle, int w, int h)
 {
@@ -379,7 +494,11 @@ void CCEGLView::setAccelerometerKeyHook( LPFN_ACCELEROMETER_KEYHOOK lpfnAccelero
 
 bool CCEGLView::isOpenGLReady()
 {
+#ifdef CC_USING_ANGLE_EGL
+    return _egl_display != 0;
+#else
     return (m_hDC != NULL && m_hRC != NULL);
+#endif
 }
 
 void CCEGLView::end()
@@ -396,10 +515,14 @@ void CCEGLView::end()
 
 void CCEGLView::swapBuffers()
 {
+#ifdef CC_USING_ANGLE_EGL
+    eglSwapBuffers(_egl_display, _egl_surface);
+#else
     if (m_hDC != NULL)
     {
         ::SwapBuffers(m_hDC);
     }
+#endif
 }
 
 
