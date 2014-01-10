@@ -17,6 +17,22 @@ CCScene* HelloWorld::scene()
     return scene;
 }
 
+//virtual void blt(const Rect& dstRect, RenderBuffer* srcBuffer, const Rect& srcRect, float opacity);
+//virtual void fill(int x, int y, int width, int height, unsigned int color);
+//virtual void clear();
+//
+//virtual void* lock(const Rect& lockRect, bool readonly, int* pitch);
+//virtual void unlock();
+//
+//virtual void render(const Rect& dstRect, const Rect& srcRect, int z = 0, int opacity = 255);
+//virtual void render_ex(const Rect& dstRect, const Rect& srcRect, int z, int opacity, const RenderOption& option);
+//
+//virtual void draw_text(const Font& font, int x, int y, int width, int height, const char* str, int align);
+//virtual void hue_change(int hue);
+//
+//virtual bool get_pixel(int x, int y, Color& color);
+//virtual bool set_pixel(int x, int y, const Color& color);
+
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {

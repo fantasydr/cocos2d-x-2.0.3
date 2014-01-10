@@ -29,6 +29,7 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 ipch/
 *.opensdf
+*.vcxproj.user
 
 # Ignore files build by ndk and eclipse
 libs/
